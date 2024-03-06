@@ -4,25 +4,25 @@ This is the central repository for the tools I developed for the simulation of g
 
 The toolbox consists of the following parts:
 
-![GasChromatographySimulator.jl](/assets/GasChromatographySimulator_logo.png)
+![GasChromatographySimulator.jl](/assets/GasChromatographySimulator_logo_w.png)
 
 [GasChromatographySimulator.jl](https://github.com/JanLeppert/GasChromatographySimulator.jl)
 
 This is the base for the GC simulation. The migration and development of the peak width of several substances through a capillary column with a stationary phase is modeled by two ordinary differential equations (ODE). The model is described in detail in [Leppert](http://10.1016/j.chroma.2020.460985) and the package is presented in [Leppert2022](https://doi.org/10.21105/joss.04565).
 
-![GasChromatographySystems.jl](/assets/GasChromatographySystems_logo.png)
+![GasChromatographySystems.jl](/assets/GasChromatographySystems_logo_w.png)
 
 [GasChromatographySystems.jl](https://github.com/JanLeppert/GasChromatographySystems.jl)
 
 This package uses the GasChromatographySimulator.jl package to simulate the separation in complex GC systems, which consists of multiple capillary columns, e.g. multidimensional GC, GC×GC or multiple outlets at different pressures. It also works as a flow calculator for complex GC systems.
 
-![RetentionParameterEstimator.jl](/assets/RetentionParameterEstimator_logo.png)
+![RetentionParameterEstimator.jl](/assets/RetentionParameterEstimator_logo_w.png)
 
 [RetentionParameterEstimator.jl](https://github.com/JanLeppert/RetentionParameterEstimator.jl)
 
 This package uses the GasChromatographySimulator.jl package to estimate retention parameters from multiple GC measurement (temperature programmed and/or isothermal). The difference between measured and simulated retention times is minimized using a Newton method with trust regions, to determine the best fitting set of retention parameters. More information can be found in [Leppert2023](https://doi.org/10.1016/j.chroma.2023.464008).
 
-![RetentionData](/assets/RetentionData_logo.png)
+![RetentionData](/assets/RetentionData_logo_w.png)
 
 [RetentionData](https://github.com/JanLeppert/RetentionData)
 
