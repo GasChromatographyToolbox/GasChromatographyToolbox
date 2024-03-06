@@ -50,6 +50,8 @@ julia> using Pluto; Pluto.run();
 
 Pluto will open your browser. In the field `Open from file` the URL of a notebook or the path to a locally downloaded notebook can be insert and the notebook will open and load the necessary packages.
 
+> :warning: **Running a notebook for the first time after installing Julia can take some time to download the needed packages to your system.** 
+
 An expanded tutorial can be found in this [PDF](https://github.com/JanLeppert/GasChromatographySimulator.jl/raw/main/InstallGuide.pdf).
 
 ### Overview of notebooks
