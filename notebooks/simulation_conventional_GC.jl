@@ -75,7 +75,7 @@ md"""
 
 # ╔═╡ 17966423-96f5-422f-9734-4ab0edab86bd
 md"""
-### Solute Database
+## Solute Database
 Load own database: $(@bind own_db CheckBox(default=false))
 """
 
@@ -102,13 +102,16 @@ end
 
 # ╔═╡ 51eb4859-20b9-4cac-bde4-ef30c6fea59d
 md"""
-### Program settings
+## Program settings
 
 Number of ramps: $(@bind n_ramp confirm(NumberField(0:1:100; default=3)))
 """
 
 # ╔═╡ 052062dc-790c-4c08-96e4-ba6e0efeb2c4
-md"""### Substance category"""
+md"""
+## Substance settings
+#### Substance categories
+"""
 
 # ╔═╡ 3c856d47-c6c2-40d3-b547-843f9654f48d
 md"""
@@ -126,7 +129,7 @@ md"""
 function UI_Options()
 	PlutoUI.combine() do Child
 		@htl("""
-		<h3>Option settings</h3>
+		<h2>Option settings</h2>
 		
 		viscosity model: $(
 			Child(Select(["HP", "Blumberg"]; default="Blumberg"))
@@ -147,7 +150,7 @@ opt = GasChromatographySimulator.Options(;abstol=1e-8, reltol=1e-5, ng=true, vis
 function UI_Column(; default=(10.0, 0.25, 0.25, "He"))
 		PlutoUI.combine() do Child
 			@htl("""
-			<h3>Column settings</h3>
+			<h2>Column settings</h2>
 			L [m]: $(
 				Child(NumberField(0.1:0.1:100.0; default=default[1]))
 			)  d [mm]: $(
@@ -186,34 +189,8 @@ begin
 	@bind cat_values confirm(MultiSelect(["all categories"; unique(skipmissing([cat_filter.Cat_1 cat_filter.Cat_2 cat_filter.Cat_3]))]; default=["all categories"]))
 end	
 
-# ╔═╡ 7a00bb54-553f-47f5-b5db-b40d226f4183
-begin 	
-	if cat_values == ["all categories"]
-		@bind sub_values confirm(GasChromatographySimulator.UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], db; id=true); default=(1:5,)))
-	else	
-
-		dbfilter=
-			try 
-				filter([:Cat_1]=>(x)-> occursin(string(x), string(cat_values)), db) 
-			catch
-				try 
-					filter([:Cat_2]=>(x)-> occursin(string(x), string(cat_values)), db)
-				catch
-					try 
-						filter([:Cat_3]=>(x)-> occursin(string(x), string(cat_values)), db)
-					catch
-					end
-				end
-			end
-		@bind sub_values confirm(GasChromatographySimulator.UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], dbfilter; id=true); default=(1:1,)))
-	end 
-end
-
 # ╔═╡ f7f06be1-c8fa-4eee-953f-0d5ea26fafbf
 col = GasChromatographySimulator.Column(col_values[1], col_values[2]*1e-3, col_values[3]*1e-6, sp_value[1], col_values[4]);
-
-# ╔═╡ e3277bb4-301a-4a1e-a838-311832b6d6aa
-sub = GasChromatographySimulator.load_solute_database(db, col.sp, col.gas, GasChromatographySimulator.pares_No_from_sub_values(sub_values[1]), zeros(length(sub_values[1])), zeros(length(sub_values[1])));
 
 # ╔═╡ c26c1ea7-575f-495d-86bc-987aca991664
 function UI_TP(n_ramp)
@@ -314,6 +291,67 @@ begin
 												)
 end;
 
+# ╔═╡ 088f1b80-2e70-41f7-a607-f2781354cf2d
+function UI_Substance(sol; default=(1:4,))
+	if length(sol)>10
+		select_size = 10
+	else
+		select_size = length(sol)
+	end
+	if length(default) == 3
+		PlutoUI.combine() do Child
+			@htl("""
+			<h4>Substance selection</h4> 
+			
+			Select Substances: $(
+				Child(MultiSelect(sol; default=sol[default[1]], size=select_size))
+			) 
+			Injection time [s]: $(
+				Child(NumberField(0.0:0.1:100.0; default=default[2]))
+			) and Injection width [s]: $(
+				Child(NumberField(0.00:0.01:10.0; default=default[3]))
+			) 
+			""")
+		end
+	elseif length(default) == 1
+		PlutoUI.combine() do Child
+			@htl("""
+			<h4>Substance selection</h4> 
+			
+			Select Substances: $(
+				Child(MultiSelect(sol; default=sol[default[1]], size=select_size))
+			) 
+			""")
+		end
+	end
+end
+
+# ╔═╡ 7a00bb54-553f-47f5-b5db-b40d226f4183
+begin 	
+	if cat_values == ["all categories"]
+		@bind sub_values confirm(UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], db; id=true); default=(1:5,)))
+	else	
+
+		dbfilter=
+			try 
+				filter([:Cat_1]=>(x)-> occursin(string(x), string(cat_values)), db) 
+			catch
+				try 
+					filter([:Cat_2]=>(x)-> occursin(string(x), string(cat_values)), db)
+				catch
+					try 
+						filter([:Cat_3]=>(x)-> occursin(string(x), string(cat_values)), db)
+					catch
+					end
+				end
+			end
+		@bind sub_values confirm(UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], dbfilter; id=true); default=(1:1,)))
+	end 
+end
+
+# ╔═╡ e3277bb4-301a-4a1e-a838-311832b6d6aa
+sub = GasChromatographySimulator.load_solute_database(db, col.sp, col.gas, GasChromatographySimulator.pares_No_from_sub_values(sub_values[1]), zeros(length(sub_values[1])), zeros(length(sub_values[1])));
+
 # ╔═╡ 85954bdb-d649-4772-a1cd-0bda5d9917e9
 par = GasChromatographySimulator.Parameters(col, prog, sub, opt);
 
@@ -333,7 +371,7 @@ begin
 	l = @layout([a{0.65w} d{0.35w}])
 	p_TpF = plot(plot_T, p_pF, layout=l, size=(620,300))
 	md"""
-	# Plot of the program
+	### Plot of the program
 	
 	$(embed_display(p_TpF))
 	"""
@@ -446,4 +484,5 @@ $(DownloadButton(export_str_, result_filename))
 # ╟─50f1bd7f-a479-453d-a8ea-57c37a4e330c
 # ╟─2b4d8f8a-3fc4-4df0-aed4-01963170d9bd
 # ╟─c26c1ea7-575f-495d-86bc-987aca991664
+# ╟─088f1b80-2e70-41f7-a607-f2781354cf2d
 # ╟─69cf18dd-a7b5-4f29-a8d2-e35420242db9
