@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.31
+# v0.19.39
 
 using Markdown
 using InteractiveUtils
@@ -74,7 +74,7 @@ md"""
 
 # ╔═╡ 7fdd3112-c8df-431c-a514-f386423bca17
 md"""
-### Solute Database
+## Solute Database
 Load own database: $(@bind own_db CheckBox(default=false))
 """
 
@@ -99,24 +99,17 @@ begin
 	"""
 end
 
-# ╔═╡ e0669a58-d5ac-4d01-b079-05412b413dda
-@bind col_values confirm(GasChromatographySimulator.UI_Column(sp))
-
-# ╔═╡ 560a8d83-0337-45ed-9611-11891af77a82
-md"""### Substance category"""
-
-# ╔═╡ 3b453f46-1003-4a58-9ea7-192b00695959
-begin
-	cat_filter=filter([:Phase]=>(x)-> x.== col_values[4], db)
-	
-	@bind cat_values confirm(MultiSelect(["all categories"; unique(skipmissing([cat_filter.Cat_1 cat_filter.Cat_2 cat_filter.Cat_3]))]; default=["all categories"]))
-end	
-
 # ╔═╡ 323a769f-55f9-41dd-b8f1-db7928996a52
 md"""
-# Plot of the program
+### Plot of the program
 
 select temperature plot: $(@bind Tplot Select(["T(x,t)", "T(x)", "T(t)"]; default="T(t)"))
+"""
+
+# ╔═╡ 560a8d83-0337-45ed-9611-11891af77a82
+md"""
+## Substance settings
+#### Substance categories
 """
 
 # ╔═╡ 3c856d47-c6c2-40d3-b547-843f9654f48d
@@ -131,34 +124,51 @@ md"""
 # End
 """
 
-# ╔═╡ f7f06be1-c8fa-4eee-953f-0d5ea26fafbf
-col = GasChromatographySimulator.Column(col_values[1], col_values[2]*1e-3, col_values[3]*1e-6, col_values[4], col_values[5]);
-
-# ╔═╡ ee5111de-f1c9-452d-a52c-16d7ccca7ba8
-begin 	
-	if cat_values == ["all categories"]
-		@bind sub_values confirm(GasChromatographySimulator.UI_Substance(GasChromatographySimulator.all_solutes(col.sp, db; id=true); default=(1:5, 0.0, 0.0)))
-	else	
-
-		dbfilter=
-			try 
-				filter([:Cat_1]=>(x)-> occursin(string(x), string(cat_values)), db) 
-			catch
-				try 
-					filter([:Cat_2]=>(x)-> occursin(string(x), string(cat_values)), db)
-				catch
-					try 
-						filter([:Cat_3]=>(x)-> occursin(string(x), string(cat_values)), db)
-					catch
-					end
-				end
-			end
-		@bind sub_values confirm(GasChromatographySimulator.UI_Substance(GasChromatographySimulator.all_solutes(col.sp, dbfilter; id=true); default=(1:1, 0.0, 0.0)))
-	end 
+# ╔═╡ 1164c15f-897e-4a77-883a-664fbfa7904f
+function UI_Column(; default=(10.0, 0.25, 0.25, "He"))
+		PlutoUI.combine() do Child
+			@htl("""
+			<h2>Column settings</h2>
+			L [m]: $(
+				Child(NumberField(0.1:0.1:100.0; default=default[1]))
+			)  d [mm]: $(
+				Child(NumberField(0.01:0.01:1.00; default=default[2]))
+			)  d_f [µm]: $(
+				Child(NumberField(0.01:0.01:1.00; default=default[3]))
+			)  Gas: $(
+				Child(Select(["He", "H2", "N2"]; default=default[4]))
+			) 
+			
+			""")
+	end
 end
 
-# ╔═╡ e3277bb4-301a-4a1e-a838-311832b6d6aa
-sub = GasChromatographySimulator.load_solute_database(db, col.sp, col.gas, GasChromatographySimulator.pares_No_from_sub_values(sub_values[1]), sub_values[2].*ones(length(sub_values[1])), sub_values[3].*ones(length(sub_values[1])));
+# ╔═╡ e0669a58-d5ac-4d01-b079-05412b413dda
+@bind col_values confirm(UI_Column())
+
+# ╔═╡ d97d81b7-693e-4caa-b74f-8b6ceb699e11
+function UI_statphase(sp)
+		PlutoUI.combine() do Child
+			@htl("""
+			stat. phase: $(
+				Child(Select(sp))
+			)
+			""")
+	end
+end
+
+# ╔═╡ 859dbaa2-46ef-47db-88f5-949d68acf2b7
+@bind sp_value confirm(UI_statphase(sp))
+
+# ╔═╡ 3b453f46-1003-4a58-9ea7-192b00695959
+begin
+	cat_filter=filter([:Phase]=>(x)-> x.== sp_value[1], db)
+	
+	@bind cat_values confirm(MultiSelect(["all categories"; unique(skipmissing([cat_filter.Cat_1 cat_filter.Cat_2 cat_filter.Cat_3]))]; default=["all categories"]))
+end	
+
+# ╔═╡ f7f06be1-c8fa-4eee-953f-0d5ea26fafbf
+col = GasChromatographySimulator.Column(col_values[1], col_values[2]*1e-3, col_values[3]*1e-6, sp_value[1], col_values[4]);
 
 # ╔═╡ 3eccee4a-ee64-4910-bddf-faa124d51e1f
 function UI_Program(opt; default=("0 60 300 300 120", "40 40 170 300 300", "0 0 40 60 0", "-3 -3 -3 -3 -3", "18 18 58 98 98", "0 0 0 0 0"))
@@ -169,7 +179,7 @@ function UI_Program(opt; default=("0 60 300 300 120", "40 40 170 300 300", "0 0 
 	end
 	PlutoUI.combine() do Child
 		@htl("""
-		<h3>Program settings</h3> 
+		<h2>Program settings</h2> 
 		<em>Note: Same number of entrys for every text field.</em>
 		<ul>
 		$(
@@ -200,11 +210,72 @@ function UI_Program(opt; default=("0 60 300 300 120", "40 40 170 300 300", "0 0 
 	end
 end
 
+# ╔═╡ 140b24d0-f69e-41cd-b091-f1963e02912b
+function UI_Substance(sol; default=(1:4,))
+	if length(sol)>10
+		select_size = 10
+	else
+		select_size = length(sol)
+	end
+	if length(default) == 3
+		PlutoUI.combine() do Child
+			@htl("""
+			<h4>Substance selection</h4> 
+			
+			Select Substances: $(
+				Child(MultiSelect(sol; default=sol[default[1]], size=select_size))
+			) 
+			Injection time [s]: $(
+				Child(NumberField(0.0:0.1:100.0; default=default[2]))
+			) and Injection width [s]: $(
+				Child(NumberField(0.00:0.01:10.0; default=default[3]))
+			) 
+			""")
+		end
+	elseif length(default) == 1
+		PlutoUI.combine() do Child
+			@htl("""
+			<h4>Substance selection</h4> 
+			
+			Select Substances: $(
+				Child(MultiSelect(sol; default=sol[default[1]], size=select_size))
+			) 
+			""")
+		end
+	end
+end
+
+# ╔═╡ ee5111de-f1c9-452d-a52c-16d7ccca7ba8
+begin 	
+	if cat_values == ["all categories"]
+		@bind sub_values confirm(UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], db; id=true); default=(1:5, 0.0, 0.0)))
+	else	
+
+		dbfilter=
+			try 
+				filter([:Cat_1]=>(x)-> occursin(string(x), string(cat_values)), db) 
+			catch
+				try 
+					filter([:Cat_2]=>(x)-> occursin(string(x), string(cat_values)), db)
+				catch
+					try 
+						filter([:Cat_3]=>(x)-> occursin(string(x), string(cat_values)), db)
+					catch
+					end
+				end
+			end
+		@bind sub_values confirm(UI_Substance(GasChromatographySimulator.all_solutes(sp_value[1], dbfilter; id=true); default=(1:1, 0.0, 0.0)))
+	end 
+end
+
+# ╔═╡ e3277bb4-301a-4a1e-a838-311832b6d6aa
+sub = GasChromatographySimulator.load_solute_database(db, col.sp, col.gas, GasChromatographySimulator.pares_No_from_sub_values(sub_values[1]), sub_values[2].*ones(length(sub_values[1])), sub_values[3].*ones(length(sub_values[1])));
+
 # ╔═╡ 85e52a8b-2709-4bff-b46b-09a2ea85c2cf
 function UI_Options()
 	PlutoUI.combine() do Child
 		@htl("""
-		<h3>Option settings</h3>
+		<h2>Option settings</h2>
 		
 		abstol: 1e $(
 			Child(NumberField(-10:1:-3; default=-8))
@@ -275,9 +346,6 @@ begin
 	"""
 end
 
-# ╔═╡ 629b46e6-0c46-4372-a22a-f3749f6f2a04
-par
-
 # ╔═╡ 49faa7ea-0f22-45ca-9ab5-338d0db25564
 begin	
 	peaklist, solution = GasChromatographySimulator.simulate(par)
@@ -314,7 +382,7 @@ function export_str(opt_values, col_values, prog_values, pl)
 	opt_str_array = ["abstol = 1e$(opt_values[1])", "reltol = 1e$(opt_values[2])", "Tcontrol = $(opt_values[3])", "viscosity = $(opt_values[4])", "control = $(opt_values[5])"]
 	opt_str = string(join(opt_str_array, ", "), "\n")
 	
-	col_str_array = ["L = $(col_values[1]) m", "d = $(col_values[2]) mm", "df = $(col_values[3]) µm", col_values[4], "gas = $(col_values[5])"]
+	col_str_array = ["L = $(col_values[1]) m", "d = $(col_values[2]) mm", "df = $(col_values[3]) µm", sp_value[1], "gas = $(col_values[4])"]
 	col_str = string(join(col_str_array, ", "), "\n")
 
 	if opt.control == "Pressure"
@@ -357,16 +425,16 @@ $(DownloadButton(export_str_, result_filename))
 # ╟─8b3011fd-f3df-4ab0-b611-b943d5f3d470
 # ╟─7fdd3112-c8df-431c-a514-f386423bca17
 # ╟─77a34d59-bc6e-4c5a-ad51-f69903449cb0
-# ╠═273dcf96-6de4-4380-a00f-ed119bfa13b7
+# ╟─273dcf96-6de4-4380-a00f-ed119bfa13b7
 # ╟─3e053ac1-db7b-47c1-b52c-00e26b59912f
 # ╟─e0669a58-d5ac-4d01-b079-05412b413dda
-# ╟─a7e1f0ee-714e-4b97-8741-d4ab5321d5e0
+# ╟─859dbaa2-46ef-47db-88f5-949d68acf2b7
+# ╠═a7e1f0ee-714e-4b97-8741-d4ab5321d5e0
+# ╟─323a769f-55f9-41dd-b8f1-db7928996a52
+# ╟─fdb39284-201b-432f-bff6-986ddbc49a7d
 # ╟─560a8d83-0337-45ed-9611-11891af77a82
 # ╟─3b453f46-1003-4a58-9ea7-192b00695959
 # ╟─ee5111de-f1c9-452d-a52c-16d7ccca7ba8
-# ╟─323a769f-55f9-41dd-b8f1-db7928996a52
-# ╟─fdb39284-201b-432f-bff6-986ddbc49a7d
-# ╟─629b46e6-0c46-4372-a22a-f3749f6f2a04
 # ╟─49faa7ea-0f22-45ca-9ab5-338d0db25564
 # ╟─14db2d66-eea6-43b1-9caf-2039709d1ddb
 # ╟─a2287fe8-5aa2-4259-bf7c-f715cc866243
@@ -380,6 +448,9 @@ $(DownloadButton(export_str_, result_filename))
 # ╟─ee267b33-4086-4e04-9f39-b7f53f2ec920
 # ╟─e3277bb4-301a-4a1e-a838-311832b6d6aa
 # ╟─85954bdb-d649-4772-a1cd-0bda5d9917e9
+# ╟─1164c15f-897e-4a77-883a-664fbfa7904f
+# ╟─d97d81b7-693e-4caa-b74f-8b6ceb699e11
 # ╟─3eccee4a-ee64-4910-bddf-faa124d51e1f
+# ╟─140b24d0-f69e-41cd-b091-f1963e02912b
 # ╟─85e52a8b-2709-4bff-b46b-09a2ea85c2cf
 # ╟─03ff111e-674a-44c9-89fd-d8f4e255ee53
