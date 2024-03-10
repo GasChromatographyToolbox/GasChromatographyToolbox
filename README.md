@@ -6,25 +6,25 @@ The toolbox consists of the following parts:
 
 ![GasChromatographySimulator.jl](/assets/GasChromatographySimulator_logo_w_s.png)
 
-[GasChromatographySimulator.jl](https://github.com/JanLeppert/GasChromatographySimulator.jl)
+[GasChromatographySimulator.jl](https://github.com/GasChromatographyToolbox/GasChromatographySimulator.jl)
 
-This is the base for the GC simulation. The migration and development of the peak width of several substances through a capillary column with a stationary phase is modeled by two ordinary differential equations (ODE). The model is described in detail in [[Leppert](http://10.1016/j.chroma.2020.460985)] and the package is presented in [[Leppert2022](https://doi.org/10.21105/joss.04565)].
+This is the base for the GC simulation. The migration and development of the peak width of several substances through a capillary column with a stationary phase is modeled by two ordinary differential equations (ODE). The model is described in detail in [[Leppert2020](https://doi.org/10.1016/j.chroma.2020.460985)] and the package is presented in [[Leppert2022](https://doi.org/10.21105/joss.04565)].
 
 ![GasChromatographySystems.jl](/assets/GasChromatographySystems_logo_w_s.png)
 
-[GasChromatographySystems.jl](https://github.com/JanLeppert/GasChromatographySystems.jl)
+[GasChromatographySystems.jl](https://github.com/GasChromatographyToolbox/GasChromatographySystems.jl)
 
 This package uses the GasChromatographySimulator.jl package to simulate the separation in complex GC systems, which consists of multiple capillary columns, e.g. multidimensional GC, GC×GC or multiple outlets at different pressures. It also works as a flow calculator for complex GC systems.
 
 ![RetentionParameterEstimator.jl](/assets/RetentionParameterEstimator_logo_w_s.png)
 
-[RetentionParameterEstimator.jl](https://github.com/JanLeppert/RetentionParameterEstimator.jl)
+[RetentionParameterEstimator.jl](https://github.com/GasChromatographyToolbox/RetentionParameterEstimator.jl)
 
-This package uses the GasChromatographySimulator.jl package to estimate retention parameters from multiple GC measurement (temperature programmed and/or isothermal). The difference between measured and simulated retention times is minimized using a Newton method with trust regions, to determine the best fitting set of retention parameters. More information can be found in [Leppert2023](https://doi.org/10.1016/j.chroma.2023.464008).
+This package uses the GasChromatographySimulator.jl package to estimate retention parameters from multiple GC measurement (temperature programmed and/or isothermal). The difference between measured and simulated retention times is minimized using a Newton method with trust regions, to determine the best fitting set of retention parameters. More information can be found in [[Leppert2023](https://doi.org/10.1016/j.chroma.2023.464008)].
 
 ![RetentionData](/assets/RetentionData_logo_w_s.png)
 
-[RetentionData](https://github.com/JanLeppert/RetentionData)
+[RetentionData](https://github.com/GasChromatographyToolbox/RetentionData)
 
 This is not a Julia package, only a collection of retention data found in literature and from our measurements. Mor information can be found in [[Brehmer2023](https://doi.org/10.1021/acsomega.3c01348)].
 
@@ -52,10 +52,10 @@ Pluto will open your browser. In the field `Open from file` the URL of a noteboo
 
 > :warning: **Running a notebook for the first time after installing Julia can take some time to download the needed packages to your system.** 
 
-An expanded tutorial can be found in this [PDF](https://github.com/JanLeppert/GasChromatographySimulator.jl/raw/main/InstallGuide.pdf). The notebook is than executed, by first loading the needed packages. In a first run, after installing Julia for the first time, this can take an extended amount of time because the packages and their dependencies have to be downloaded first. A later start of the notebook should be faster, but loading all the packages can take several 10s of seconds or even some minutes. 
+An expanded tutorial can be found in this [PDF](https://github.com/GasChromatographyToolbox/GasChromatographySimulator.jl/raw/main/InstallGuide.pdf). The notebook is than executed, by first loading the needed packages. In a first run, after installing Julia for the first time, this can take an extended amount of time because the packages and their dependencies have to be downloaded first. A later start of the notebook should be faster, but loading all the packages can take several 10s of seconds or even some minutes. 
 
 ### Overview of notebooks
 
-* `simulation_conventional_GC.jl` ... Simulation of GC separation in one capillary column using [GasChromatographySimulator.jl](https://github.com/JanLeppert/GasChromatographySimulator.jl). Retention data from [RetentionData](https://github.com/JanLeppert/RetentionData) is used.
-* `simulation_thermal_gradient_GC.jl` ... Simulation of GC separation in one capillary column with a thermal gradient along the column using [GasChromatographySimulator.jl](https://github.com/JanLeppert/GasChromatographySimulator.jl). Retention data from [RetentionData](https://github.com/JanLeppert/RetentionData) is used.
-* `estimate_retention_parameters.jl` ... Estimation of retention parameters from measured chromatograms.
+* [`simulation_conventional_GC.jl`](https://github.com/GasChromatographyToolbox/GasChromatographyToolbox/blob/main/notebooks/simulation_conventional_GC.jl) ... Simulation of GC separation in one capillary column using [GasChromatographySimulator.jl](https://github.com/GasChromatographyToolbox/GasChromatographySimulator.jl). Retention data from [RetentionData](https://github.com/GasChromatographyToolbox/RetentionData) is used.
+* [`simulation_thermal_gradient_GC.jl`](https://github.com/GasChromatographyToolbox/GasChromatographyToolbox/blob/main/notebooks/simulation_thermal_gradient_GC.jl) ... Simulation of GC separation in one capillary column with a thermal gradient along the column using [GasChromatographySimulator.jl](https://github.com/GasChromatographyToolbox/GasChromatographySimulator.jl). Retention data from [RetentionData](https://github.com/GasChromatographyToolbox/RetentionData) is used.
+* [`estimate_retention_parameters.jl`](https://github.com/GasChromatographyToolbox/GasChromatographyToolbox/blob/main/notebooks/estimate_retention_parameters.jl) ... Estimation of retention parameters from measured chromatograms.
