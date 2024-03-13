@@ -394,9 +394,6 @@ begin
 	"""
 end
 
-# ╔═╡ 0f91abe2-11ae-4cf3-9126-656af1dba7a8
-peaklist
-
 # ╔═╡ a2287fe8-5aa2-4259-bf7c-f715cc866243
 begin
 	pchrom = GasChromatographySimulator.plot_chromatogram(peaklist, (0,sum(par.prog.time_steps)))[1]
@@ -406,6 +403,9 @@ begin
 	$(embed_display(pchrom))
 	"""
 end
+
+# ╔═╡ 0f91abe2-11ae-4cf3-9126-656af1dba7a8
+peaklist
 
 # ╔═╡ 0740f2e6-bce0-4590-acf1-ad4d7cb7c523
 begin
@@ -2714,7 +2714,6 @@ version = "1.4.1+1"
 # ╟─0e2eba31-5643-4d10-9ed4-4454ec28df12
 # ╟─0c3970ac-28f7-4bc4-b7eb-879dd719bd60
 # ╟─fb6117fe-ed31-4a8b-8c35-9ccd28fe641a
-# ╟─a2287fe8-5aa2-4259-bf7c-f715cc866243
 # ╟─51eb4859-20b9-4cac-bde4-ef30c6fea59d
 # ╟─f195738b-765c-449b-af10-f1686d656da6
 # ╟─e4de755c-84ed-494f-9835-0f990ccd75a0
@@ -2725,6 +2724,7 @@ version = "1.4.1+1"
 # ╟─49faa7ea-0f22-45ca-9ab5-338d0db25564
 # ╟─14db2d66-eea6-43b1-9caf-2039709d1ddb
 # ╟─0f91abe2-11ae-4cf3-9126-656af1dba7a8
+# ╟─a2287fe8-5aa2-4259-bf7c-f715cc866243
 # ╟─3c856d47-c6c2-40d3-b547-843f9654f48d
 # ╟─0740f2e6-bce0-4590-acf1-ad4d7cb7c523
 # ╟─e8f84397-bd60-41a2-98c7-494873f6faf4
